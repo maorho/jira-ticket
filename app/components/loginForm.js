@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useAuth } from "@/context/AuthContext";
 
-const LoginForm = ({user,setUser,onLogin}) => {
-  const [email, setEmail] = useState('');
-  const [apiToken, setApiToken] = useState('');
+
+
+const LoginForm = () => {
+  let { user, email, apiToken, login,setUser,setEmailContext,setApiTokenContext} = useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const credentials = { email,user, apiToken };
 
     try {
-      console.log(`email:${email},username:${user},apitoken:${apiToken}`);
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,8 +20,7 @@ const LoginForm = ({user,setUser,onLogin}) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        onLogin(true);
+        login();
       } else {
         alert('Invalid credentials!');
       }
@@ -50,8 +49,7 @@ const LoginForm = ({user,setUser,onLogin}) => {
           <input
             type="email"
             className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmailContext(e.target.value)}
             required
           />
         </div>
@@ -61,7 +59,7 @@ const LoginForm = ({user,setUser,onLogin}) => {
             type="password"
             className="form-control"
             value={apiToken}
-            onChange={(e) => setApiToken(e.target.value)}
+            onChange={(e) => setApiTokenContext(e.target.value)}
             required
           />
         </div>

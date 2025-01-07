@@ -1,15 +1,17 @@
 'use client';
 
+import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 
-const TicketForm = ({user}) => {
+const TicketForm = () => {
   const [projectId, setProjectId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [occurrences, setOccurrences] = useState('');
   const [ticketUrl, setTicketUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-
+  const {email, apiToken, user} = useAuth();
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -18,8 +20,8 @@ const TicketForm = ({user}) => {
       title: title,
       description: description,
       occurrences: occurrences,
-      email: process.env.JIRA_EMAIL,
-      apiToken: process.env.JIRA_API_TOKEN,
+      email: email,
+      apiToken: apiToken,
       username: user,
     };
 
@@ -37,9 +39,7 @@ const TicketForm = ({user}) => {
       }
 
       const data = await response.json();
-      console.log(data);
       setTicketUrl(data.ticketUrl); 
-      console.log(`ticketUrl:${ticketUrl}`);
       setErrorMessage('');
     } catch (error) {
       console.error('Error creating ticket:', error);
@@ -87,6 +87,7 @@ const TicketForm = ({user}) => {
             className="form-control"
             value={occurrences}
             onChange={(e) => setOccurrences(e.target.value)}
+            required
           />
         </div>
         <button type="submit" className="btn btn-primary w-100">Create Ticket</button>
