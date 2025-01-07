@@ -1,13 +1,11 @@
 export async function POST(request) {
-  const { project_id, title, description, occurrences, email, apiToken } = await request.json();
+  const { project_id, title, description, occurrences, email, apiToken,username } = await request.json();
   if (!email || !apiToken || !project_id || !title || !occurrences) {
     return console.error( 'Required fields are missing' );
   }
   const occ = Number(occurrences);
-  const jiraUrl = `https://maorhomri1.atlassian.net/rest/api/3/issue`;
-
+  const jiraUrl = `https://${username}.atlassian.net/rest/api/3/issue`;
   try {
-    console.log(`project_id:${project_id}, title:${title}, description:${description}, occurrences:${occurrences}, email:${email}, apiToken:${apiToken}`)
     const response = await fetch(jiraUrl, {
       method: 'POST',
       headers: {
@@ -16,8 +14,7 @@ export async function POST(request) {
       },
       body: JSON.stringify({
         fields: {
-          project: { key: project_id }, // Ensure this is the project key, not numeric ID
-          summary: title,
+          project: { key: project_id }, 
           description: {
             type: "doc",
             version: 1,
@@ -34,7 +31,8 @@ export async function POST(request) {
             ],
         },
           issuetype: { name: 'Task' },
-          customfield_10038: occ, // Replace with the correct custom field ID
+          summary: title,
+          customfield_10038: occ, 
         },
       }),
     });
@@ -49,7 +47,7 @@ export async function POST(request) {
     console.log('Issue created successfully:', responseData);
 
     return new Response(
-      JSON.stringify({ ticketUrl: `https://maorhomri1.atlassian.net/browse/${responseData.key}` }),
+      JSON.stringify({ ticketUrl: `https://${username}.atlassian.net/browse/${responseData.key}` }),
       { status: 200 }
     );
   } catch (error) {
